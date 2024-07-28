@@ -20,6 +20,8 @@ const int NR_LIGHTS = 32;
 uniform Light lights[NR_LIGHTS];
 uniform vec3 viewPos;
 
+uniform vec3 ambientLightColor;
+
 void main()
 {             
     // retrieve data from gbuffer
@@ -30,7 +32,7 @@ void main()
     if (useSSAO) AmbientOcclusion = texture(ssao, TexCoords).r;
     
     // then calculate lighting as usual
-    vec3 ambient = vec3(0.3*Diffuse*AmbientOcclusion);
+    vec3 ambient = ambientLightColor*vec3(Diffuse*AmbientOcclusion);
     vec3 lighting  = ambient;
     vec3 viewDir  = normalize(- FragPos);
 

@@ -3,6 +3,7 @@
 #include <stb_image.h>
 #include <vector>
 #include <map>
+#include <cmath>
 #include <random>
 
 #include <glad/glad.h>
@@ -18,11 +19,6 @@
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-
-const int MULTISAMPLE_AMOUNT = 4;
-
-const unsigned int strideArray3A[] = { 0, 3 * sizeof(float), 6 * sizeof(float) };
-const unsigned int sizeOfEachAttr3A[] = { 3, 3, 2 };
 
 const float LIGHT_ATTENUATION_CONSTANT = 1.0f;
 const float LIGHT_ATTENUATION_LINEAR = 0.09f;
@@ -53,8 +49,8 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	stbi_set_flip_vertically_on_load(true);
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL Showcase", NULL, NULL);
+	stbi_set_flip_vertically_on_load(false);
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL Deferred Renderer", NULL, NULL);
 	if (window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
@@ -84,6 +80,7 @@ int main() {
 	Shader ssaoShader = Shader("./src/shaders/shd_ssao.vert", "./src/shaders/shd_ssao.frag");
 
 	Model ourModel("./rsc/models/shadow/shadow.obj");
+	unsigned int woodTexture = texture_from_file("wood.png", "./rsc/textures/", true);
 
 	/* Generate noise texture (for SSAO) */
 	std::uniform_real_distribution<float> randomFloats(0.0, 1.0);
@@ -177,9 +174,21 @@ int main() {
 	objectPositions.push_back(glm::vec3(-3.0, -0.5, 3.0));
 	objectPositions.push_back(glm::vec3(0.0, -0.5, 3.0));
 	objectPositions.push_back(glm::vec3(3.0, -0.5, 3.0));
+
+	std::vector<float> objectRotations;
+	for (size_t i = 0; i < objectPositions.size(); ++i)
+		objectRotations.push_back(0.0f);
+	const float rotationRate = 160.0f; //degrees per standard unit of time (modified by delta time)
+
+	std::vector<float> objectOscillationOffsets;
+	for (int i = 0; i < objectPositions.size(); i++) {
+		objectOscillationOffsets.push_back((float)i);
+	}
+	const float maxDeviance = 1.0f;
 	
 	// lighting info
 	// -------------
+	const glm::vec3 ambientLightColor = glm::vec3(0.1);
 	const unsigned int NR_LIGHTS = 32;
 	std::vector<glm::vec3> lightPositions;
 	std::vector<glm::vec3> lightColors;
@@ -208,6 +217,7 @@ int main() {
 	lightingShader.setInt("gNormal", 1);
 	lightingShader.setInt("gAlbedoSpec", 2);
 	lightingShader.setInt("ssao", 3);
+	lightingShader.setVec3f("ambientLightColor", ambientLightColor);
 	ssaoShader.use();
 	ssaoShader.setInt("gPosition", 0);
 	ssaoShader.setInt("gNormal", 1);
@@ -218,6 +228,8 @@ int main() {
 	ssaoShader.setFloat("bias", 0.025f);
 	simpleBlurShader.use();
 	simpleBlurShader.setInt("ssaoInput", 0);
+
+	state.camera.position = glm::vec3(-6.5, 0.0, 0.0);
 
 	while (!glfwWindowShouldClose(window)) {
 		//Calculate delta time
@@ -242,15 +254,26 @@ int main() {
 			gBufferShader.use();
 			gBufferShader.setMat4("projection", projection);
 			gBufferShader.setMat4("view", view);
+			glm::mat4 model;
 			for (size_t i = 0; i < objectPositions.size(); ++i) {
-				glm::mat4 model = glm::mat4(1.0f);
+				model = glm::mat4(1.0f);
 				model = glm::translate(model, objectPositions[i]);
-				model = glm::rotate(model, glm::radians(-90.0f), glm::normalize(glm::vec3(0.0, 1.0, 0.0)));
+				model = glm::rotate(model, glm::radians(-90.0f+objectRotations[i]), glm::normalize(glm::vec3(0.0, 1.0, 0.0)));
 				model = glm::scale(model, glm::vec3(0.025f));
+				//now update the model's position and rotation information
+				objectPositions[i].y = maxDeviance * glm::sin(glfwGetTime() + objectOscillationOffsets[i]);
+				objectRotations[i] = std::fmod(objectRotations[i] + (rotationRate * state.deltaTime), 360.0f);
 				gBufferShader.setMat4("model", model);
 				gBufferShader.setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
 				ourModel.draw(gBufferShader);
 			}
+			model = glm::mat4(1.0f);
+			model = glm::scale(model, glm::vec3(10.0));
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, woodTexture);
+			gBufferShader.setMat4("model", model);
+			gBufferShader.setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+			render_cube();
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		ssaoFramebuffer.bind();

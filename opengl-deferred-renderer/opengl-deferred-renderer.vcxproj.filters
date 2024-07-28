@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\util">
+      <UniqueIdentifier>{05c4d0e2-7feb-49b9-8523-a83b75a04c1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\shaders">
+      <UniqueIdentifier>{ba5b0978-8f77-4dff-9443-72cde1392a4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\models">
+      <UniqueIdentifier>{0aa63097-ec4d-4a67-8edb-ae010e2a1072}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\textures">
+      <UniqueIdentifier>{debf2df3-d4fa-4876-9477-f56b432758a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\shaders\lighting">
+      <UniqueIdentifier>{86f25380-0698-4308-ba17-c5f99f82e063}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\shaders\postprocessing">
+      <UniqueIdentifier>{168136f1-7a63-40f5-a6a5-4e0e314a649b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\models\shadow">
+      <UniqueIdentifier>{5ca07c73-3bb4-441f-b163-27a53b41f0cb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\glad.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\stb_image.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\state_management.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\shader_util.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util\render_util.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\materials.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\render_util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\shader_util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\state_management.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\shaders\lighting\shd_deferred_lighting.frag">
+      <Filter>Source Files\shaders\lighting</Filter>
+    </None>
+    <None Include="src\shaders\lighting\shd_deferred_lighting.vert">
+      <Filter>Source Files\shaders\lighting</Filter>
+    </None>
+    <None Include="src\shaders\lighting\shd_forward_lighting.frag">
+      <Filter>Source Files\shaders\lighting</Filter>
+    </None>
+    <None Include="src\shaders\lighting\shd_forward_lighting.vert">
+      <Filter>Source Files\shaders\lighting</Filter>
+    </None>
+    <None Include="src\shaders\postprocessing\shd_2d.frag">
+      <Filter>Source Files\shaders\postprocessing</Filter>
+    </None>
+    <None Include="src\shaders\postprocessing\shd_2d.vert">
+      <Filter>Source Files\shaders\postprocessing</Filter>
+    </None>
+    <None Include="src\shaders\postprocessing\shd_gaussian_blur.frag">
+      <Filter>Source Files\shaders\postprocessing</Filter>
+    </None>
+    <None Include="src\shaders\postprocessing\shd_gaussian_blur.vert">
+      <Filter>Source Files\shaders\postprocessing</Filter>
+    </None>
+    <None Include="src\shaders\postprocessing\shd_hdr.frag">
+      <Filter>Source Files\shaders\postprocessing</Filter>
+    </None>
+    <None Include="src\shaders\postprocessing\shd_hdr.vert">
+      <Filter>Source Files\shaders\postprocessing</Filter>
+    </None>
+    <None Include="src\shaders\lighting\shd_basic_shadows.frag">
+      <Filter>Source Files\shaders\lighting</Filter>
+    </None>
+    <None Include="src\shaders\lighting\shd_basic_shadows.vert">
+      <Filter>Source Files\shaders\lighting</Filter>
+    </None>
+    <None Include="src\shaders\lighting\shd_normal_mapping.frag">
+      <Filter>Source Files\shaders\lighting</Filter>
+    </None>
+    <None Include="src\shaders\lighting\shd_normal_mapping.vert">
+      <Filter>Source Files\shaders\lighting</Filter>
+    </None>
+    <None Include="src\shaders\shd_diffuse.frag">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="src\shaders\shd_diffuse.vert">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="src\shaders\shd_gbuffer.frag">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="src\shaders\shd_gbuffer.vert">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="src\shaders\postprocessing\shd_simple_blur.frag">
+      <Filter>Source Files\shaders\postprocessing</Filter>
+    </None>
+    <None Include="src\shaders\postprocessing\shd_simple_blur.vert">
+      <Filter>Source Files\shaders\postprocessing</Filter>
+    </None>
+    <None Include="src\shaders\shd_ssao.frag">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="src\shaders\shd_ssao.vert">
+      <Filter>Source Files\shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="rsc\textures\bricks2.jpg">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="rsc\textures\bricks2_disp.jpg">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="rsc\textures\bricks2_normal.jpg">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="rsc\textures\brickwall.jpg">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="rsc\textures\brickwall_normal.jpg">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="rsc\textures\toy_box_disp.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="rsc\textures\toy_box_normal.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="rsc\textures\wood.png">
+      <Filter>Resource Files\textures</Filter>
+    </Image>
+    <Image Include="rsc\models\shadow\ShadowBo.png">
+      <Filter>Resource Files\models\shadow</Filter>
+    </Image>
+    <Image Include="rsc\models\shadow\ShadowBody.png">
+      <Filter>Resource Files\models\shadow</Filter>
+    </Image>
+    <Image Include="rsc\models\shadow\ShadowEy.png">
+      <Filter>Resource Files\models\shadow</Filter>
+    </Image>
+    <Image Include="rsc\models\shadow\ShadowEyes.png">
+      <Filter>Resource Files\models\shadow</Filter>
+    </Image>
+    <Image Include="rsc\models\shadow\ShadowFa.png">
+      <Filter>Resource Files\models\shadow</Filter>
+    </Image>
+    <Image Include="rsc\models\shadow\ShadowFace.png">
+      <Filter>Resource Files\models\shadow</Filter>
+    </Image>
+    <Image Include="rsc\models\shadow\ShadowGo.png">
+      <Filter>Resource Files\models\shadow</Filter>
+    </Image>
+    <Image Include="rsc\models\shadow\ShadowGold.png">
+      <Filter>Resource Files\models\shadow</Filter>
+    </Image>
+    <Image Include="rsc\models\shadow\ShadowSt.png">
+      <Filter>Resource Files\models\shadow</Filter>
+    </Image>
+    <Image Include="rsc\models\shadow\ShadowStripes.png">
+      <Filter>Resource Files\models\shadow</Filter>
+    </Image>
+    <Image Include="rsc\models\shadow\ShadowWh.png">
+      <Filter>Resource Files\models\shadow</Filter>
+    </Image>
+    <Image Include="rsc\models\shadow\ShadowWhite.png">
+      <Filter>Resource Files\models\shadow</Filter>
+    </Image>
+    <Image Include="rsc\models\shadow\shadow.3ds">
+      <Filter>Resource Files\models\shadow</Filter>
+    </Image>
+    <Image Include="rsc\models\shadow\shadow.dae">
+      <Filter>Resource Files\models\shadow</Filter>
+    </Image>
+    <Image Include="rsc\models\shadow\shadow.mtl">
+      <Filter>Resource Files\models\shadow</Filter>
+    </Image>
+    <Image Include="rsc\models\shadow\shadow.obj">
+      <Filter>Resource Files\models\shadow</Filter>
+    </Image>
+    <Image Include="rsc\models\shadow\shadow.smd">
+      <Filter>Resource Files\models\shadow</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="rsc\models\shadow\Credits.txt">
+      <Filter>Resource Files\models\shadow</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

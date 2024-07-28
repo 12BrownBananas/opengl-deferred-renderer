@@ -46,16 +46,6 @@ class Material {
         Material(glm::vec3 _diffuse, glm::vec3 _specular, float _shine);
 };
 
-class Light {
-    public:
-        glm::vec3 position;
-        glm::vec3 ambient;
-        glm::vec3 diffuse;
-        glm::vec3 specular;
-        Light(glm::vec3 _position, glm::vec3 _ambient, glm::vec3 _diffuse, glm::vec3 _specular);
-        Light(glm::vec3 _position, glm::vec3 _lightColor);
-};
-
 struct Vertex {
     glm::vec3 position;
     glm::vec3 normal;

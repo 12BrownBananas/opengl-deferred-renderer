@@ -1,3 +1,6 @@
+#ifndef RENDER_UTIL_H
+#define RENDER_UTIL_H
+
 #include <unordered_map>
 #include <glad/glad.h>
 #include <memory>
@@ -49,3 +52,5 @@ namespace Framebuffer {
 	void reset_framebuffer_bindings();
 	bool check_if_bound_framebuffer_is_complete();
 }
+
+#endif

@@ -15,12 +15,31 @@ struct Light {
     float Linear;
     float Quadratic;
     float Radius;
+    float FarPlane;
+    samplerCube Cubemap;
 };
-const int NR_LIGHTS = 32;
+const int NR_LIGHTS = 16;
 uniform Light lights[NR_LIGHTS];
 uniform vec3 viewPos;
 
 uniform vec3 ambientLightColor;
+
+float shadow_calculation(vec3 fragPos, Light l)
+{
+    // get vector between fragment position and light position
+    vec3 fragToLight = fragPos - l.Position;
+    // ise the fragment to light vector to sample from the depth map    
+    float closestDepth = texture(l.Cubemap, fragToLight).r;
+    // it is currently in linear range between [0,1], let's re-transform it back to original depth value
+    closestDepth *= l.FarPlane;
+    // now get current linear depth as the length between the fragment and light position
+    float currentDepth = length(fragToLight);
+    // test for shadows
+    float bias = 0.05; // we use a much larger bias since depth is now in [near_plane, far_plane] range
+    float shadow = currentDepth -  bias > closestDepth ? 1.0 : 0.0;        
+    
+    return shadow;
+}
 
 void main()
 {             
@@ -50,9 +69,10 @@ void main()
             // attenuation
 
             float attenuation = 1.0 / (1.0 + lights[i].Linear * dist + lights[i].Quadratic * dist * dist);
+            float shadow = shadow_calculation(FragPos, lights[i]);
             diffuse *= attenuation;
             specular *= attenuation;
-            lighting += diffuse + specular;
+            lighting += (1.0 - shadow)*(diffuse + specular);
         }
     }
     FragColor = vec4(lighting, 1.0);

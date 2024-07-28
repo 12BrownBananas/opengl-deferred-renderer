@@ -16,6 +16,7 @@
 #include <state_management.h>
 #include <camera.h>
 #include <render_util.h>
+#include <lighting.h>
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -23,9 +24,86 @@ const unsigned int SCR_HEIGHT = 600;
 const float LIGHT_ATTENUATION_CONSTANT = 1.0f;
 const float LIGHT_ATTENUATION_LINEAR = 0.09f;
 const float LIGHT_ATTENUATION_QUADRATIC = 0.032f;
-const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024; //NOTE: Used for shadow map generation, which is not currently in this demo
+const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+
+void render_cube();
+
+class Scene {
+public:
+	std::vector<glm::vec3> objectPositions;
+	std::vector<float> objectRotations;
+	const float rotationRate = 160.0f; //degrees per standard unit of time (modified by delta time)
+
+	std::vector<float> objectOscillationOffsets;
+	const float maxDeviance = 1.0f;
+	Model* ourModel;
+	State::GameState* state;
+	unsigned int texture;
+	Scene(Model* ourModel, State::GameState* state, unsigned int texture) {
+		this->ourModel = ourModel;
+		this->state = state;
+		this->texture = texture;
+		objectPositions.push_back(glm::vec3(-3.0, -0.5, -3.0));
+		objectPositions.push_back(glm::vec3(0.0, -0.5, -3.0));
+		objectPositions.push_back(glm::vec3(3.0, -0.5, -3.0));
+		objectPositions.push_back(glm::vec3(-3.0, -0.5, 0.0));
+		objectPositions.push_back(glm::vec3(0.0, -0.5, 0.0));
+		objectPositions.push_back(glm::vec3(3.0, -0.5, 0.0));
+		objectPositions.push_back(glm::vec3(-3.0, -0.5, 3.0));
+		objectPositions.push_back(glm::vec3(0.0, -0.5, 3.0));
+		objectPositions.push_back(glm::vec3(3.0, -0.5, 3.0));
+
+		for (size_t i = 0; i < objectPositions.size(); ++i)
+			objectRotations.push_back(0.0f);
+
+		for (int i = 0; i < objectPositions.size(); i++) {
+			objectOscillationOffsets.push_back((float)i);
+		}
+	}
+	void update() {
+		//now update the model's position and rotation information
+		for (auto i = 0; i < objectPositions.size(); i++) {
+			objectPositions[i].y = maxDeviance * glm::sin(glfwGetTime() + objectOscillationOffsets[i]);
+			objectRotations[i] = std::fmod(objectRotations[i] + (rotationRate * state->deltaTime), 360.0f);
+		}
+	}
+	void render(Shader &shader) {
+		glm::mat4 model;
+		for (size_t i = 0; i < objectPositions.size(); ++i) {
+			model = glm::mat4(1.0f);
+			model = glm::translate(model, objectPositions[i]);
+			model = glm::rotate(model, glm::radians(-90.0f + objectRotations[i]), glm::normalize(glm::vec3(0.0, 1.0, 0.0)));
+			model = glm::scale(model, glm::vec3(0.025f));
+			shader.setMat4("model", model);
+			shader.setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+			ourModel->draw(shader);
+		}
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(10.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(5.0));
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture);
+		shader.setMat4("model", model);
+		shader.setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+		render_cube();
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 10.0f));
+		model = glm::scale(model, glm::vec3(5.0));
+		shader.setMat4("model", model);
+		shader.setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+		render_cube();
+
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, -10.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(5.0));
+		shader.setMat4("model", model);
+		shader.setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
+		render_cube();
+	}
+};
 
 State::GameState state;
+
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
@@ -33,7 +111,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window, State::GameState& state);
 
 unsigned int generate_noise_texture(std::vector<glm::vec3> ssaoNoise);
-void render_cube();
 void render_quad();
 void draw_scaled(Model& scaledModel, Shader& shader, glm::vec3 scale);
 void draw_outline(Model& outlineModel, Shader& outlineShader, glm::vec3 scale);
@@ -70,6 +147,7 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 	Shader lightingShader = Shader("./src/shaders/lighting/shd_deferred_lighting.vert", "./src/shaders/lighting/shd_deferred_lighting.frag");
 	Shader forwardLightingShader = Shader("./src/shaders/lighting/shd_forward_lighting.vert", "./src/shaders/lighting/shd_forward_lighting.frag");
+	Shader simpleDepthShader = Shader("./src/shaders/lighting/shd_point_shadows_depth.vert", "./src/shaders/lighting/shd_point_shadows_depth.frag", "./src/shaders/lighting/shd_point_shadows_depth.geom");
 
 	Shader blurShader = Shader("./src/shaders/postprocessing/shd_gaussian_blur.vert", "./src/shaders/postprocessing/shd_gaussian_blur.frag");
 	Shader hdrShader = Shader("./src/shaders/postprocessing/shd_hdr.vert", "./src/shaders/postprocessing/shd_hdr.frag");
@@ -111,7 +189,6 @@ int main() {
 	}
 	unsigned int noiseTexture = generate_noise_texture(ssaoNoise);
 	
-
 	/* Create the "screen" buffer */
 	Framebuffer::Framebuffer forwardBuffer(SCR_WIDTH, SCR_HEIGHT);
 	forwardBuffer.init(true, GL_DEPTH_COMPONENT, GL_DEPTH_ATTACHMENT);
@@ -164,34 +241,13 @@ int main() {
 	}
 	Framebuffer::reset_framebuffer_bindings();
 
-	std::vector<glm::vec3> objectPositions;
-	objectPositions.push_back(glm::vec3(-3.0, -0.5, -3.0));
-	objectPositions.push_back(glm::vec3(0.0, -0.5, -3.0));
-	objectPositions.push_back(glm::vec3(3.0, -0.5, -3.0));
-	objectPositions.push_back(glm::vec3(-3.0, -0.5, 0.0));
-	objectPositions.push_back(glm::vec3(0.0, -0.5, 0.0));
-	objectPositions.push_back(glm::vec3(3.0, -0.5, 0.0));
-	objectPositions.push_back(glm::vec3(-3.0, -0.5, 3.0));
-	objectPositions.push_back(glm::vec3(0.0, -0.5, 3.0));
-	objectPositions.push_back(glm::vec3(3.0, -0.5, 3.0));
-
-	std::vector<float> objectRotations;
-	for (size_t i = 0; i < objectPositions.size(); ++i)
-		objectRotations.push_back(0.0f);
-	const float rotationRate = 160.0f; //degrees per standard unit of time (modified by delta time)
-
-	std::vector<float> objectOscillationOffsets;
-	for (int i = 0; i < objectPositions.size(); i++) {
-		objectOscillationOffsets.push_back((float)i);
-	}
-	const float maxDeviance = 1.0f;
+	Scene scene = Scene(&ourModel, &state, woodTexture);
 	
 	// lighting info
 	// -------------
 	const glm::vec3 ambientLightColor = glm::vec3(0.1);
-	const unsigned int NR_LIGHTS = 32;
-	std::vector<glm::vec3> lightPositions;
-	std::vector<glm::vec3> lightColors;
+	const unsigned int NR_LIGHTS = 16;
+	std::vector<PointLight> sceneLights;
 	srand(13);
 	for (unsigned int i = 0; i < NR_LIGHTS; i++)
 	{
@@ -199,12 +255,14 @@ int main() {
 		float xPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 3.0);
 		float yPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 4.0);
 		float zPos = static_cast<float>(((rand() % 100) / 100.0) * 6.0 - 3.0);
-		lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
+		
 		// also calculate random color
 		float rColor = static_cast<float>(((rand() % 100) / 200.0f) + 0.5); // between 0.5 and 1.0
 		float gColor = static_cast<float>(((rand() % 100) / 200.0f) + 0.5); // between 0.5 and 1.0
 		float bColor = static_cast<float>(((rand() % 100) / 200.0f) + 0.5); // between 0.5 and 1.0
-		lightColors.push_back(glm::vec3(rColor, gColor, bColor));
+
+		PointLight l(glm::vec3(xPos, yPos, zPos), glm::vec3(rColor, gColor, bColor), glm::vec2(SHADOW_WIDTH, SHADOW_HEIGHT)); //point lights contain their own framebuffers, for rendering shadow map information
+		sceneLights.push_back(l);
 	}
 
 	gBufferShader.use();
@@ -230,6 +288,7 @@ int main() {
 	simpleBlurShader.setInt("ssaoInput", 0);
 
 	state.camera.position = glm::vec3(-6.5, 0.0, 0.0);
+	const float shadowMapStartId = 4.f; //for the deferred renderer, the first 4 channels (0, 1, 2, and 3) are reserved for positio, normal, albedospecular, and ssao blur. Thus, shadow cubemaps can start being bound at index 4 and beyond.
 
 	while (!glfwWindowShouldClose(window)) {
 		//Calculate delta time
@@ -249,31 +308,28 @@ int main() {
 		glm::mat4 projection = glm::perspective(glm::radians(state.camera.zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 		glm::mat4 view = state.camera.getViewMatrix();
 
+		//shadow map generation pass
+		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+		for (auto l : sceneLights) {
+			glBindFramebuffer(GL_FRAMEBUFFER, l.depthMapFBO);
+				glClear(GL_DEPTH_BUFFER_BIT);
+				simpleDepthShader.use();
+				for (size_t i = 0; i < l.shadowTransforms.size(); ++i) {
+					simpleDepthShader.setMat4("shadowMatrices[" + std::to_string(i) + "]", l.shadowTransforms[i]);
+				}
+				simpleDepthShader.setFloat("far_plane", l.farPlane);
+				simpleDepthShader.setVec3f("lightPos", l.position);
+				scene.render(simpleDepthShader);
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		}
+		glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
+		//gbuffer pass
 		gBuffer.bind();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			gBufferShader.use();
 			gBufferShader.setMat4("projection", projection);
 			gBufferShader.setMat4("view", view);
-			glm::mat4 model;
-			for (size_t i = 0; i < objectPositions.size(); ++i) {
-				model = glm::mat4(1.0f);
-				model = glm::translate(model, objectPositions[i]);
-				model = glm::rotate(model, glm::radians(-90.0f+objectRotations[i]), glm::normalize(glm::vec3(0.0, 1.0, 0.0)));
-				model = glm::scale(model, glm::vec3(0.025f));
-				//now update the model's position and rotation information
-				objectPositions[i].y = maxDeviance * glm::sin(glfwGetTime() + objectOscillationOffsets[i]);
-				objectRotations[i] = std::fmod(objectRotations[i] + (rotationRate * state.deltaTime), 360.0f);
-				gBufferShader.setMat4("model", model);
-				gBufferShader.setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
-				ourModel.draw(gBufferShader);
-			}
-			model = glm::mat4(1.0f);
-			model = glm::scale(model, glm::vec3(10.0));
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, woodTexture);
-			gBufferShader.setMat4("model", model);
-			gBufferShader.setMat3("normalMatrix", glm::transpose(glm::inverse(glm::mat3(model))));
-			render_cube();
+			scene.render(gBufferShader);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		ssaoFramebuffer.bind();
@@ -313,14 +369,20 @@ int main() {
 			gBuffer.bindTexture(GL_COLOR_ATTACHMENT2); //albedo/specular
 			glActiveTexture(GL_TEXTURE3);
 			ssaoBlurFramebuffer.bindTexture(GL_COLOR_ATTACHMENT0); //blur
+			for (auto i = 0; i < sceneLights.size(); ++i) {
+				glActiveTexture(GL_TEXTURE0 + shadowMapStartId + i);
+				glBindTexture(GL_TEXTURE_CUBE_MAP, sceneLights[i].depthCubemap);
+			}
 			//send the right uniforms to the lighting shader
 			lightingShader.setVec2f("position", glm::vec2(0.0, 0.0));
 			lightingShader.setVec2f("scale", glm::vec2(1.0, 1.0));
-			for (unsigned int i = 0; i < lightPositions.size(); i++)
+			for (size_t i = 0; i < sceneLights.size(); i++)
 			{
-				glm::vec3 lightColor = lightColors[i];
-				lightingShader.setVec3f("lights[" + std::to_string(i) + "].Position", lightPositions[i]);
+				glm::vec3 lightColor = sceneLights[i].color;
+				lightingShader.setVec3f("lights[" + std::to_string(i) + "].Position", sceneLights[i].position);
 				lightingShader.setVec3f("lights[" + std::to_string(i) + "].Color", lightColor);
+				lightingShader.setInt("lights[" + std::to_string(i) + "].Cubemap", shadowMapStartId + i);
+				lightingShader.setFloat("lights[" + std::to_string(i) + "].FarPlane", sceneLights[i].farPlane);
 				// update attenuation parameters and calculate radius
 				const float linear = 0.7f;
 				const float quadratic = 1.8f;
@@ -351,12 +413,12 @@ int main() {
 			forwardLightingShader.use();
 			forwardLightingShader.setMat4("projection", projection);
 			forwardLightingShader.setMat4("view", view);
-			for (size_t i = 0; i < lightPositions.size(); i++) {
+			for (size_t i = 0; i < sceneLights.size(); i++) {
 				glm::mat4 model = glm::mat4(1.0f);
-				model = glm::translate(model, lightPositions[i]);
+				model = glm::translate(model, sceneLights[i].position);
 				model = glm::scale(model, glm::vec3(0.125f));
 				forwardLightingShader.setMat4("model", model);
-				forwardLightingShader.setVec3f("lightColor", lightColors[i]);
+				forwardLightingShader.setVec3f("lightColor", sceneLights[i].color);
 				render_cube();
 			}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -385,6 +447,8 @@ int main() {
 		screenShader.setVec2f("position", glm::vec2(0.0, 0.0));
 		screenShader.setVec2f("scale", glm::vec2(1.0, 1.0));
 		render_quad();
+
+		scene.update();
 
 		glBindVertexArray(0);
 		glfwSwapBuffers(window);

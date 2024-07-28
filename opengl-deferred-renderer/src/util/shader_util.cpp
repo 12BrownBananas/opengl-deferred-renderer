@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <assimp/Importer.hpp>
+#include <render_util.h>
 
 /* Model and mesh implementations mostly borrowed from Joey DeVries (https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/model.h) to avoid needlessly re-implenting compatibility with assimp */
 
@@ -212,19 +213,6 @@ Material::Material(glm::vec3 _diffuse, glm::vec3 _specular, float _shine) {
 	diffuse = _diffuse;
 	specular = _specular;
 	shine = _shine;
-}
-
-Light::Light(glm::vec3 _position, glm::vec3 _ambient, glm::vec3 _diffuse, glm::vec3 _specular) {
-	position = _position;
-	ambient = _ambient;
-	diffuse = _diffuse;
-	specular = _specular;
-}
-Light::Light(glm::vec3 _position, glm::vec3 _lightColor) {
-	position = _position;
-	diffuse = _lightColor * glm::vec3(0.5f);
-	ambient = diffuse * glm::vec3(0.2f);
-	specular = glm::vec3(1.0f);
 }
 
 Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures) {

@@ -54,6 +54,9 @@
     <ClCompile Include="src\util\render_util.cpp">
       <Filter>Source Files\util</Filter>
     </ClCompile>
+    <ClCompile Include="src\util\lighting.cpp">
+      <Filter>Source Files\util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\camera.h">
@@ -72,6 +75,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\util\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\util\lighting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -106,12 +112,6 @@
     <None Include="src\shaders\postprocessing\shd_hdr.vert">
       <Filter>Source Files\shaders\postprocessing</Filter>
     </None>
-    <None Include="src\shaders\lighting\shd_basic_shadows.frag">
-      <Filter>Source Files\shaders\lighting</Filter>
-    </None>
-    <None Include="src\shaders\lighting\shd_basic_shadows.vert">
-      <Filter>Source Files\shaders\lighting</Filter>
-    </None>
     <None Include="src\shaders\lighting\shd_normal_mapping.frag">
       <Filter>Source Files\shaders\lighting</Filter>
     </None>
@@ -141,6 +141,15 @@
     </None>
     <None Include="src\shaders\shd_ssao.vert">
       <Filter>Source Files\shaders</Filter>
+    </None>
+    <None Include="src\shaders\lighting\shd_point_shadows_depth.frag">
+      <Filter>Source Files\shaders\lighting</Filter>
+    </None>
+    <None Include="src\shaders\lighting\shd_point_shadows_depth.geom">
+      <Filter>Source Files\shaders\lighting</Filter>
+    </None>
+    <None Include="src\shaders\lighting\shd_point_shadows_depth.vert">
+      <Filter>Source Files\shaders\lighting</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

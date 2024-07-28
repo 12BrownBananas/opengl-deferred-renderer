@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\util\lighting.cpp" />
     <ClCompile Include="src\util\render_util.cpp" />
     <ClCompile Include="src\util\shader_util.cpp" />
     <ClCompile Include="src\util\state_management.cpp" />
@@ -28,6 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\camera.h" />
+    <ClInclude Include="src\util\lighting.h" />
     <ClInclude Include="src\util\materials.h" />
     <ClInclude Include="src\util\render_util.h" />
     <ClInclude Include="src\util\shader_util.h" />
@@ -51,14 +53,15 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <FileType>Document</FileType>
     </Image>
-    <None Include="src\shaders\lighting\shd_basic_shadows.frag" />
-    <None Include="src\shaders\lighting\shd_basic_shadows.vert" />
     <None Include="src\shaders\lighting\shd_deferred_lighting.frag" />
     <None Include="src\shaders\lighting\shd_deferred_lighting.vert" />
     <None Include="src\shaders\lighting\shd_forward_lighting.frag" />
     <None Include="src\shaders\lighting\shd_forward_lighting.vert" />
     <None Include="src\shaders\lighting\shd_normal_mapping.frag" />
     <None Include="src\shaders\lighting\shd_normal_mapping.vert" />
+    <None Include="src\shaders\lighting\shd_point_shadows_depth.frag" />
+    <None Include="src\shaders\lighting\shd_point_shadows_depth.geom" />
+    <None Include="src\shaders\lighting\shd_point_shadows_depth.vert" />
     <None Include="src\shaders\postprocessing\shd_2d.frag" />
     <None Include="src\shaders\postprocessing\shd_2d.vert" />
     <None Include="src\shaders\postprocessing\shd_gaussian_blur.frag" />

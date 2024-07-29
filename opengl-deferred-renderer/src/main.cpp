@@ -20,10 +20,6 @@
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-
-const float LIGHT_ATTENUATION_CONSTANT = 1.0f;
-const float LIGHT_ATTENUATION_LINEAR = 0.09f;
-const float LIGHT_ATTENUATION_QUADRATIC = 0.032f;
 const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
 
 void render_cube();
@@ -261,7 +257,7 @@ int main() {
 		float gColor = static_cast<float>(((rand() % 100) / 200.0f) + 0.5); // between 0.5 and 1.0
 		float bColor = static_cast<float>(((rand() % 100) / 200.0f) + 0.5); // between 0.5 and 1.0
 
-		PointLight l(glm::vec3(xPos, yPos, zPos), glm::vec3(rColor, gColor, bColor), glm::vec2(SHADOW_WIDTH, SHADOW_HEIGHT)); //point lights contain their own framebuffers, for rendering shadow map information
+		PointLight l(glm::vec3(xPos, yPos, zPos), glm::vec3(rColor, gColor, bColor), glm::vec2(SHADOW_WIDTH, SHADOW_HEIGHT), LightAttenuationInfo{}); //note that point lights create their own framebuffers, for rendering shadow map information
 		sceneLights.push_back(l);
 	}
 
@@ -384,9 +380,9 @@ int main() {
 				lightingShader.setInt("lights[" + std::to_string(i) + "].Cubemap", shadowMapStartId + i);
 				lightingShader.setFloat("lights[" + std::to_string(i) + "].FarPlane", sceneLights[i].farPlane);
 				// update attenuation parameters and calculate radius
-				const float linear = 0.7f;
-				const float quadratic = 1.8f;
-				const float constant = 1.0;
+				const float linear = sceneLights[i].attenuationInfo.linear;
+				const float quadratic = sceneLights[i].attenuationInfo.quadratic;
+				const float constant = sceneLights[i].attenuationInfo.constant;
 				lightingShader.setFloat("lights[" + std::to_string(i) + "].Linear", linear);
 				lightingShader.setFloat("lights[" + std::to_string(i) + "].Quadratic", quadratic);
 				float lightMax = std::fmaxf(std::fmaxf(lightColor.r, lightColor.g), lightColor.b);

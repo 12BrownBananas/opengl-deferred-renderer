@@ -8,8 +8,9 @@ Light::Light(glm::vec3 position, glm::vec3 lightColor) {
 	this->position = position;
 	this->color = lightColor;
 }
-PointLight::PointLight(glm::vec3 position, glm::vec3 lightColor, glm::vec2 cubemapDimensions) : Light(position, lightColor) {
+PointLight::PointLight(glm::vec3 position, glm::vec3 lightColor, glm::vec2 cubemapDimensions, LightAttenuationInfo attenuationInfo) : Light(position, lightColor) {
 	this->cubemapDimensions = cubemapDimensions;
+	this->attenuationInfo = attenuationInfo;
 	glGenFramebuffers(1, &depthMapFBO);
 	// create depth cubemap texture
 	glGenTextures(1, &depthCubemap);

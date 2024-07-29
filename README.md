@@ -1,6 +1,6 @@
 Reasonably-extensible deferred renderer written in modern OpenGL (version 3.3... for now!) based (increasingly-loosely) on Joey DeVries deferred rendering tutorial (https://learnopengl.com/Advanced-Lighting/Deferred-Shading)
 
-![](ezgif-7-4acf996745.gif)
+![](repository_images/ezgif-7-4acf996745.gif)
 
 Featuring omnidirectional shadows, as well as omnidirectional Shadows! Press tab to toggle visibility of the different gbuffer layers!
 

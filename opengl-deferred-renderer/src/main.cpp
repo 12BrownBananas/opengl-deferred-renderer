@@ -266,6 +266,10 @@ int main() {
 	gBufferShader.setInt("texture_specular1", 1);
 	screenShader.use();
 	screenShader.setInt("screenTexture", 0);
+	hdrShader.use();
+	hdrShader.setInt("scene", 0);
+	hdrShader.setBool("useHDR", true);
+	hdrShader.setFloat("exposure", 1.0);
 	lightingShader.use();
 	lightingShader.setInt("gPosition", 0);
 	lightingShader.setInt("gNormal", 1);
@@ -440,8 +444,10 @@ int main() {
 		}
 		glActiveTexture(GL_TEXTURE0);
 		forwardBuffer.bindTexture(GL_COLOR_ATTACHMENT0); //now we render the combined texture to the screen
-		screenShader.setVec2f("position", glm::vec2(0.0, 0.0));
-		screenShader.setVec2f("scale", glm::vec2(1.0, 1.0));
+		
+		hdrShader.use();
+		hdrShader.setVec2f("position", glm::vec2(0.0, 0.0));
+		hdrShader.setVec2f("scale", glm::vec2(1.0, 1.0));
 		render_quad();
 
 		scene.update();

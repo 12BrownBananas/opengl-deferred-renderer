@@ -10,10 +10,6 @@ uniform bool useHdr;
 
 
 // Constants
-const float HCV_EPSILON = 1e-10;
-const float HSL_EPSILON = 1e-10;
-const float HCY_EPSILON = 1e-10;
-
 const float SRGB_GAMMA = 1.0 / 2.2;
 const float SRGB_INVERSE_GAMMA = 2.2;
 const float SRGB_ALPHA = 0.055;
